@@ -18,4 +18,11 @@ public class AdminPage extends BasePage {
             return false;
         }
     }
+
+    public void logout() {
+        try {
+            waitForVisible(logoutLink).click();
+        } catch (Exception ignored) {
+        }
+    }
 }

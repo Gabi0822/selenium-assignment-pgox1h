@@ -8,7 +8,7 @@
 # ============================================================
 
 student:
-  website_under_test: ""
+  website_under_test: "https://demo.bludit.com/admin/"
     
     
 # ----------------------------------------------------------
@@ -19,9 +19,9 @@ student:
 # This has no effect on your grade.
 # ----------------------------------------------------------
 ai_usage:
-  used: false
-  tools: ""           # e.g. "Claude, GitHub Copilot"
-  description: ""     # e.g. "Used Claude to generate initial Page Object 
+  used: true
+  tools: "GitHub Copilot"           # e.g. "Claude, GitHub Copilot"
+  description: "Used to create the test classes, and the initial elements for the assignment, then I changed everything else manually"     # e.g. "Used Claude to generate initial Page Object 
                        #  classes, then modified them manually. Used Copilot 
                        #  for autocomplete while writing test methods."
                        
@@ -33,7 +33,7 @@ ai_usage:
 # ----------------------------------------------------------
 quality:
   gitignore:                 # required for grade 2+
-    done: false
+    done: true
     description: "Unnecessary files are ignored (.gitignore covers build output, IDE files, etc.)"
 
   structured_code:           # required for grade 3+

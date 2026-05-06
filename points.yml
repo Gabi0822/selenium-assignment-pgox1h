@@ -37,7 +37,7 @@ quality:
     description: "Unnecessary files are ignored (.gitignore covers build output, IDE files, etc.)"
 
   structured_code:           # required for grade 3+
-    done: false
+    done: true
     description: "Code is organized into classes and functions, not one big file"
 
   readable_code:             # required for grade 4+

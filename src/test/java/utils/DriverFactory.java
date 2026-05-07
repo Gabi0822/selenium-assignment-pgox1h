@@ -8,15 +8,20 @@ import config.ConfigReader;
 
 /**
  * Factory class for creating WebDriver instances with proper configuration.
- * Configuration is loaded from external properties file via ConfigReader.
+ * 
+ * Configuration is loaded from external properties file via ConfigReader, ensuring:
+ * - No hardcoded browser settings
+ * - Easy maintenance and updates
+ * - Consistent driver setup across all tests
+ * - Container-friendly options (headless, no-sandbox, etc.)
  */
 public class DriverFactory {
 
     /**
      * Create a Chrome WebDriver with headless mode and container-friendly options.
-     * Settings are read from test.properties file.
+     * Settings are read from test.properties file via ConfigReader.
      *
-     * @return configured ChromeDriver instance
+     * @return configured ChromeDriver instance ready for use
      */
     public static WebDriver createChromeDriver() {
         WebDriverManager.chromedriver().setup();
@@ -25,7 +30,10 @@ public class DriverFactory {
 
     /**
      * Configure Chrome options for headless testing in container environment.
-     * All settings are configurable via external properties file.
+     * All settings are configurable via external properties file:
+     * - browser.headless: Run without visible UI
+     * - --no-sandbox: For container compatibility
+     * - --disable-dev-shm-usage: Avoid shared memory issues
      *
      * @return ChromeOptions with headless, sandbox, and shared memory settings
      */

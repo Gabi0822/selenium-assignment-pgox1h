@@ -3,44 +3,62 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
+/**
+ * Page Object for login functionality.
+ */
 public class LoginPage extends BasePage {
-    private By username = By.cssSelector("input[type='text'], input[type='email'], input[name='username'], input#username");
-    private By password = By.cssSelector("input[type='password']");
-    private By submit = By.cssSelector("button[type='submit'], input[type='submit']");
+    private final By usernameInput = By.id("jsusername");
+    private final By passwordInput = By.id("jspassword");
+    private final By submitButton = By.cssSelector("button[type='submit'][name='save']");
 
     public LoginPage(WebDriver driver) {
         super(driver);
     }
 
-    public void openLogin(String url) {
-        open(url);
+    /**
+     * Navigate to login page.
+     */
+    public void openLoginPage(String loginUrl) {
+        navigateTo(loginUrl);
     }
 
-    public boolean hasLoginForm() {
+    /**
+     * Check if login form is present.
+     */
+    public boolean isLoginFormPresent() {
         try {
-            waitForVisible(username);
-            waitForVisible(password);
+            waitForElement(usernameInput);
+            waitForElement(passwordInput);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public void fillUsername(String u) {
-        waitForVisible(username).clear();
-        waitForVisible(username).sendKeys(u);
+    /**
+     * Fill username field.
+     */
+    public void enterUsername(String username) {
+        waitForElement(usernameInput).clear();
+        waitForElement(usernameInput).sendKeys(username);
     }
 
-    public void fillPassword(String p) {
-        waitForVisible(password).clear();
-        waitForVisible(password).sendKeys(p);
+    /**
+     * Fill password field.
+     */
+    public void enterPassword(String password) {
+        waitForElement(passwordInput).clear();
+        waitForElement(passwordInput).sendKeys(password);
     }
 
-    public void submit() {
+    /**
+     * Submit login form.
+     */
+    public void clickLoginButton() {
         try {
-            waitForVisible(submit).click();
+            waitForElement(submitButton).click();
         } catch (Exception e) {
-            driver.findElement(password).submit();
+            waitForElement(passwordInput).submit();
         }
     }
 }

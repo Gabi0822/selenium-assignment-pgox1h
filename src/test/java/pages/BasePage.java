@@ -5,26 +5,47 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import config.TestConstants;
+
 import java.time.Duration;
 
+/**
+ * Base page containing common methods for page interactions.
+ */
 public class BasePage {
     protected WebDriver driver;
-    private WebDriverWait wait;
+    protected WebDriverWait wait;
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(TestConstants.EXPLICIT_WAIT_TIMEOUT_SECONDS));
     }
 
-    protected WebElement waitForVisible(By locator) {
+    /**
+     * Wait for element to be visible and return it.
+     */
+    protected WebElement waitForElement(By locator) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
-    public String getTitle() {
-        return driver.getTitle();
+    /**
+     * Wait for URL to contain a substring.
+     */
+    protected void waitForUrlContains(String urlPart) {
+        wait.until(ExpectedConditions.urlContains(urlPart));
     }
 
-    public void open(String url) {
+    /**
+     * Navigate to a URL.
+     */
+    public void navigateTo(String url) {
         driver.get(url);
+    }
+
+    /**
+     * Get the current page title.
+     */
+    public String getPageTitle() {
+        return driver.getTitle();
     }
 }

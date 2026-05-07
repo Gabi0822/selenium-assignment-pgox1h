@@ -2,33 +2,46 @@ package tests;
 
 import org.testng.annotations.Test;
 import pages.LoginPage;
+import config.TestConstants;
+
 import static org.testng.Assert.*;
 
+/**
+ * Tests for login form functionality.
+ */
 public class LoginTests extends TestBase {
-    private String baseUrl = "https://demo.bludit.com/admin/";
 
+    /**
+     * Verify the page title contains "Bludit".
+     */
     @Test
     public void pageTitleContainsBludit() {
-        driver.get(baseUrl);
+        driver.get(TestConstants.BASE_URL);
         String title = driver.getTitle();
         assertTrue(title.toLowerCase().contains("bludit") || title.length() > 0);
     }
 
+    /**
+     * Verify login form is present on page.
+     */
     @Test
     public void loginFormIsPresent() {
-        LoginPage lp = new LoginPage(driver);
-        lp.openLogin(baseUrl);
-        assertTrue(lp.hasLoginForm(), "Login form should be present");
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.openLoginPage(TestConstants.BASE_URL);
+        assertTrue(loginPage.isLoginFormPresent(), "Login form should be present");
     }
 
+    /**
+     * Verify form fields can be filled and submitted.
+     */
     @Test
     public void fillInputsAndSubmit() {
-        LoginPage lp = new LoginPage(driver);
-        lp.openLogin(baseUrl);
-        if (lp.hasLoginForm()) {
-            lp.fillUsername("invalid_user");
-            lp.fillPassword("invalid_pass");
-            lp.submit();
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.openLoginPage(TestConstants.BASE_URL);
+        if (loginPage.isLoginFormPresent()) {
+            loginPage.enterUsername("invalid_user");
+            loginPage.enterPassword("invalid_pass");
+            loginPage.clickLoginButton();
         }
     }
 }

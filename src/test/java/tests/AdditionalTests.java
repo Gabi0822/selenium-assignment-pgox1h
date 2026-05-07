@@ -1,85 +1,102 @@
 package tests;
 
+import java.time.Duration;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
 import pages.AdminPage;
 import pages.FormPage;
 import pages.LoginPage;
+import config.TestConstants;
 
 import static org.testng.Assert.*;
 
+/**
+ * Additional tests for multiple pages, form interactions, and authentication.
+ */
 public class AdditionalTests extends TestBase {
-    private String baseUrl = "https://demo.bludit.com/admin/";
+    private static final String[] URLS_TO_TEST = {"https://demo.bludit.com/", TestConstants.BASE_URL};
+    private static final String FORM_TEST_TEXT = "Test textarea content";
+    private static final String LOGGED_USER_TEST_TEXT = "Submitting as logged user";
 
+    /**
+     * Verify page titles are not empty for multiple URLs.
+     */
     @Test
     public void multiplePagesTitleCheck() {
-        String[] urls = new String[]{"https://demo.bludit.com/", "https://demo.bludit.com/admin/"};
-        for (String u : urls) {
-            driver.get(u);
-            String t = driver.getTitle();
-            assertNotNull(t);
-            assertTrue(t.length() > 0, "Title should not be empty for " + u);
+        for (String url : URLS_TO_TEST) {
+            driver.get(url);
+            String title = driver.getTitle();
+            assertNotNull(title);
+            assertTrue(title.length() > 0, "Title should not be empty for " + url);
         }
     }
 
+    /**
+     * Verify form elements (textarea, select, radio) can be interacted with.
+     */
     @Test
     public void textareaDropdownRadioFormInteraction() {
-        driver.get(baseUrl);
-        FormPage fp = new FormPage(driver);
+        driver.get(TestConstants.BASE_URL);
+        FormPage form = new FormPage(driver);
         boolean interacted = false;
 
-        if (fp.hasTextarea()) {
-            fp.fillTextarea("Test textarea content");
+        if (form.hasTextarea()) {
+            form.fillTextarea(FORM_TEST_TEXT);
             interacted = true;
         }
 
-        if (fp.hasSelect()) {
+        if (form.hasSelect()) {
             try {
-                fp.selectByVisibleText("English");
+                form.selectByVisibleText("English");
             } catch (Exception e) {
-                // fallback to first option
-                fp.selectByVisibleText(fp.getFirstSelectOptionText());
+                // Fallback to first available option
+                form.selectByVisibleText(form.getFirstSelectOptionText());
             }
             interacted = true;
         }
 
-        if (fp.hasRadio()) {
-            fp.selectRadioByIndex(0);
+        if (form.hasRadio()) {
+            form.selectRadioByIndex(0);
             interacted = true;
         }
 
         if (!interacted) {
-            throw new SkipException("No textarea/select/radio found to interact with on " + baseUrl);
+            throw new SkipException("No textarea/select/radio found on " + TestConstants.BASE_URL);
         }
 
-        fp.submitForm();
+        form.submitForm();
     }
 
+    /**
+     * Verify login with valid credentials, then verify logout.
+     */
     @Test
     public void formRequiresUser_thenLogout() {
-        // Use system properties if provided, otherwise default to assignment credentials
-        String user = System.getProperty("bludit.user", "admin");
-        String pass = System.getProperty("bludit.pass", "demo123");
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.openLoginPage(TestConstants.BASE_URL);
+        loginPage.enterUsername(TestConstants.LOGIN_USERNAME);
+        loginPage.enterPassword(TestConstants.LOGIN_PASSWORD);
+        loginPage.clickLoginButton();
 
-        LoginPage lp = new LoginPage(driver);
-        lp.openLogin(baseUrl);
-        lp.fillUsername(user);
-        lp.fillPassword(pass);
-        lp.submit();
+        // Wait for dashboard URL to confirm login
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait.until(ExpectedConditions.urlContains("/admin/dashboard"));
 
-        AdminPage ap = new AdminPage(driver);
-        assertTrue(ap.isLoggedIn(), "Should be logged in after valid credentials");
+        AdminPage admin = new AdminPage(driver);
+        assertTrue(admin.isLoggedIn(), "Should be logged in after valid credentials");
 
-        // try to reach a page that requires authentication
-        driver.get("https://demo.bludit.com/admin/dashboard/");
-        FormPage fp = new FormPage(driver);
-        if (fp.hasTextarea()) {
-            fp.fillTextarea("Submitting as logged user");
-            fp.submitForm();
+        // Interact with authenticated page
+        FormPage form = new FormPage(driver);
+        if (form.hasTextarea()) {
+            form.fillTextarea(LOGGED_USER_TEST_TEXT);
+            form.submitForm();
         }
 
-        // logout
-        ap.logout();
-        assertFalse(ap.isLoggedIn(), "Should be logged out");
+        // Verify logout
+        admin.logout();
+        wait.until(ExpectedConditions.titleContains("Login"));
+        assertFalse(admin.isLoggedIn(), "Should be logged out");
     }
 }

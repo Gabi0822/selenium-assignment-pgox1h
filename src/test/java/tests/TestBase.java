@@ -5,14 +5,24 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import utils.DriverFactory;
 
+/**
+ * Base class for all tests providing WebDriver lifecycle management.
+ * All test classes should extend this class to ensure proper driver setup and cleanup.
+ */
 public class TestBase {
     protected WebDriver driver;
 
+    /**
+     * Initialize WebDriver before each test method.
+     */
     @BeforeMethod
     public void setUp() {
         driver = DriverFactory.createChromeDriver();
     }
 
+    /**
+     * Clean up WebDriver after each test method.
+     */
     @AfterMethod
     public void tearDown() {
         if (driver != null) {

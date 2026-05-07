@@ -12,7 +12,6 @@ import static org.testng.Assert.*;
 
 /**
  * Tests for complex XPath expressions covering various selector patterns.
- * Configuration is loaded from external properties file.
  */
 public class XPathTests extends TestBase {
     // XPath expressions as constants for maintainability
@@ -23,72 +22,72 @@ public class XPathTests extends TestBase {
     private static final String XPATH_LINK_WITHOUT_LOGOUT = "//a[not(contains(translate(@href, 'LOGOUT', 'logout'), 'logout'))]";
 
     /**
-     * Test XPath 1: Find input with type='text' AND name attribute using AND operator.
+     * Find input with type='text' AND name attribute using AND operator.
      */
     @Test
-    public void complexXPath_1_TextInputWithAttributes() {
+    public void textInputWithAttributes() {
         try {
             driver.get(ConfigReader.getBaseUrl());
             WebElement element = driver.findElement(By.xpath(XPATH_TEXT_INPUT_WITH_ATTRIBUTES));
             assertNotNull(element);
         } catch (Exception e) {
-            throw new SkipException("XPath 1 - Text input with attributes: " + e.getMessage());
+            throw new SkipException("Text input with attributes: " + e.getMessage());
         }
     }
 
     /**
-     * Test XPath 2: Find password input with preceding text input using axis selector.
+     * Find password input with preceding text input using axis selector.
      */
     @Test
-    public void complexXPath_2_PasswordAfterTextInput() {
+    public void passwordAfterTextInput() {
         try {
             driver.get(ConfigReader.getBaseUrl());
             WebElement element = driver.findElement(By.xpath(XPATH_PASSWORD_AFTER_TEXT));
             assertNotNull(element);
         } catch (Exception e) {
-            throw new SkipException("XPath 2 - Password after text: " + e.getMessage());
+            throw new SkipException("Password after text: " + e.getMessage());
         }
     }
 
     /**
-     * Test XPath 3: Find button containing "Login" text using normalize-space for robustness.
+     * Find button containing "Login" text using normalize-space for robustness.
      */
     @Test
-    public void complexXPath_3_ButtonWithNormalizedText() {
+    public void buttonWithNormalizedText() {
         try {
             driver.get(ConfigReader.getBaseUrl());
             WebElement element = driver.findElement(By.xpath(XPATH_BUTTON_WITH_LOGIN_TEXT));
             assertNotNull(element);
         } catch (Exception e) {
-            throw new SkipException("XPath 3 - Button with normalized text: " + e.getMessage());
+            throw new SkipException("Button with normalized text: " + e.getMessage());
         }
     }
 
     /**
-     * Test XPath 4: Find divs containing either input or label child elements using OR logic.
+     * Find divs containing either input or label child elements using OR logic.
      */
     @Test
-    public void complexXPath_4_DivWithChildElements() {
+    public void divWithChildElements() {
         try {
             driver.get(ConfigReader.getBaseUrl());
             List<WebElement> elements = driver.findElements(By.xpath(XPATH_DIV_WITH_INPUT_OR_LABEL));
             assertTrue(elements.size() > 0);
         } catch (Exception e) {
-            throw new SkipException("XPath 4 - Div with input or label: " + e.getMessage());
+            throw new SkipException("Div with input or label: " + e.getMessage());
         }
     }
 
     /**
-     * Test XPath 5: Find links NOT containing "logout" in href attribute using negation logic.
+     * Find links NOT containing "logout" in href attribute using negation logic.
      */
     @Test
-    public void complexXPath_5_LinkWithNegationLogic() {
+    public void linkWithNegationLogic() {
         try {
             driver.get(ConfigReader.getBaseUrl());
             List<WebElement> elements = driver.findElements(By.xpath(XPATH_LINK_WITHOUT_LOGOUT));
             assertTrue(elements.size() > 0);
         } catch (Exception e) {
-            throw new SkipException("XPath 5 - Link without logout: " + e.getMessage());
+            throw new SkipException("Link without logout: " + e.getMessage());
         }
     }
 }

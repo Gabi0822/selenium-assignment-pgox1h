@@ -21,7 +21,7 @@ student:
 ai_usage:
   used: true
   tools: "GitHub Copilot"           # e.g. "Claude, GitHub Copilot"
-  description: "Used to create the test classes, and the initial elements for the assignment, then I changed everything else manually"     # e.g. "Used Claude to generate initial Page Object 
+  description: "Used to create the test classes, and the initial elements for the assignment, then I changed everything else manually. After making all of the necessary tasks I refactored and reviewed my work with ai to be better look instead of spagetti code."     # e.g. "Used Claude to generate initial Page Object 
                        #  classes, then modified them manually. Used Copilot 
                        #  for autocomplete while writing test methods."
                        

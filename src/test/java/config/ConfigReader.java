@@ -6,7 +6,6 @@ import java.util.Properties;
 
 /**
  * Configuration reader that loads test settings from external properties file.
- * This ensures no hardcoded values exist in test code.
  */
 public class ConfigReader {
     private static Properties properties;

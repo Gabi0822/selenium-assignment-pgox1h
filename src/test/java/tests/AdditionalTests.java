@@ -14,7 +14,6 @@ import static org.testng.Assert.*;
 
 /**
  * Additional tests for multiple pages, form interactions, and authentication.
- * Configuration is loaded from external properties file.
  */
 public class AdditionalTests extends TestBase {
     private static final String[] URLS_TO_TEST = {ConfigReader.getHomeUrl(), ConfigReader.getBaseUrl()};

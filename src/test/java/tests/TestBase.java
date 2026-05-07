@@ -8,9 +8,7 @@ import utils.DriverFactory;
 import listeners.ScreenshotOnFailureListener;
 
 /**
- * Base class for all tests providing WebDriver lifecycle management.
- * All test classes should extend this class to ensure proper driver setup and cleanup.
- * Automatically captures screenshots when a test fails.
+ * Base class for all tests providing WebDriver.
  */
 @Listeners(ScreenshotOnFailureListener.class)
 public class TestBase {

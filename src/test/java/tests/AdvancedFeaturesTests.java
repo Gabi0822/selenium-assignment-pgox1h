@@ -11,7 +11,6 @@ import static org.testng.Assert.*;
 
 /**
  * Advanced tests featuring test dependencies, history navigation, JavaScript execution, cookies, and random data.
- * Demonstrates advanced Selenium features with configuration from external properties file.
  */
 public class AdvancedFeaturesTests extends TestBase {
 

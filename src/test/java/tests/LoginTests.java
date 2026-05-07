@@ -8,7 +8,6 @@ import static org.testng.Assert.*;
 
 /**
  * Tests for login form functionality.
- * Configuration is loaded from external properties file.
  */
 public class LoginTests extends TestBase {
 

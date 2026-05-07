@@ -14,7 +14,6 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * TestNG listener that automatically captures screenshots when a test fails.
- * Screenshots are saved to build/screenshots/ directory with timestamp.
  */
 public class ScreenshotOnFailureListener implements ITestListener {
 
@@ -32,7 +31,6 @@ public class ScreenshotOnFailureListener implements ITestListener {
 
     /**
      * Extract WebDriver from test instance using reflection.
-     * Tries to find a field named 'driver' of type WebDriver.
      */
     private WebDriver extractWebDriver(Object testInstance) {
         if (testInstance == null) {
@@ -40,7 +38,6 @@ public class ScreenshotOnFailureListener implements ITestListener {
         }
 
         try {
-            // Try to find 'driver' field in the test class or its parent classes
             Class<?> currentClass = testInstance.getClass();
             while (currentClass != null && !currentClass.equals(Object.class)) {
                 try {
@@ -71,20 +68,16 @@ public class ScreenshotOnFailureListener implements ITestListener {
         try {
             TakesScreenshot screenshot = (TakesScreenshot) driver;
             File screenshotFile = screenshot.getScreenshotAs(OutputType.FILE);
-
-            // Create screenshots directory
             String screenshotsDir = "build/screenshots";
             File dir = new File(screenshotsDir);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
 
-            // Generate filename with timestamp
             String timestamp = LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss-SSS"));
             String filename = screenshotsDir + "/" + testName + "_" + timestamp + ".png";
 
-            // Copy screenshot file
             File destFile = new File(filename);
             copyFile(screenshotFile, destFile);
 

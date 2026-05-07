@@ -4,14 +4,17 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import config.ConfigReader;
 
 /**
  * Factory class for creating WebDriver instances with proper configuration.
+ * Configuration is loaded from external properties file via ConfigReader.
  */
 public class DriverFactory {
 
     /**
      * Create a Chrome WebDriver with headless mode and container-friendly options.
+     * Settings are read from test.properties file.
      *
      * @return configured ChromeDriver instance
      */
@@ -22,12 +25,17 @@ public class DriverFactory {
 
     /**
      * Configure Chrome options for headless testing in container environment.
+     * All settings are configurable via external properties file.
      *
      * @return ChromeOptions with headless, sandbox, and shared memory settings
      */
     private static ChromeOptions createChromeOptions() {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
+        
+        if (ConfigReader.isHeadlessBrowser()) {
+            options.addArguments("--headless=new");
+        }
+        
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         return options;

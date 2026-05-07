@@ -4,7 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
-import config.TestConstants;
+import config.ConfigReader;
 
 import java.util.List;
 
@@ -12,6 +12,7 @@ import static org.testng.Assert.*;
 
 /**
  * Tests for complex XPath expressions covering various selector patterns.
+ * Configuration is loaded from external properties file.
  */
 public class XPathTests extends TestBase {
     // XPath expressions as constants for maintainability
@@ -27,7 +28,7 @@ public class XPathTests extends TestBase {
     @Test
     public void complexXPath_1_TextInputWithAttributes() {
         try {
-            driver.get(TestConstants.BASE_URL);
+            driver.get(ConfigReader.getBaseUrl());
             WebElement element = driver.findElement(By.xpath(XPATH_TEXT_INPUT_WITH_ATTRIBUTES));
             assertNotNull(element);
         } catch (Exception e) {
@@ -41,7 +42,7 @@ public class XPathTests extends TestBase {
     @Test
     public void complexXPath_2_PasswordAfterTextInput() {
         try {
-            driver.get(TestConstants.BASE_URL);
+            driver.get(ConfigReader.getBaseUrl());
             WebElement element = driver.findElement(By.xpath(XPATH_PASSWORD_AFTER_TEXT));
             assertNotNull(element);
         } catch (Exception e) {
@@ -55,7 +56,7 @@ public class XPathTests extends TestBase {
     @Test
     public void complexXPath_3_ButtonWithNormalizedText() {
         try {
-            driver.get(TestConstants.BASE_URL);
+            driver.get(ConfigReader.getBaseUrl());
             WebElement element = driver.findElement(By.xpath(XPATH_BUTTON_WITH_LOGIN_TEXT));
             assertNotNull(element);
         } catch (Exception e) {
@@ -69,7 +70,7 @@ public class XPathTests extends TestBase {
     @Test
     public void complexXPath_4_DivWithChildElements() {
         try {
-            driver.get(TestConstants.BASE_URL);
+            driver.get(ConfigReader.getBaseUrl());
             List<WebElement> elements = driver.findElements(By.xpath(XPATH_DIV_WITH_INPUT_OR_LABEL));
             assertTrue(elements.size() > 0);
         } catch (Exception e) {
@@ -83,7 +84,7 @@ public class XPathTests extends TestBase {
     @Test
     public void complexXPath_5_LinkWithNegationLogic() {
         try {
-            driver.get(TestConstants.BASE_URL);
+            driver.get(ConfigReader.getBaseUrl());
             List<WebElement> elements = driver.findElements(By.xpath(XPATH_LINK_WITHOUT_LOGOUT));
             assertTrue(elements.size() > 0);
         } catch (Exception e) {

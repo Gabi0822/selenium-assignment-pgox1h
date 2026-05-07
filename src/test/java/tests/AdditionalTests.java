@@ -8,15 +8,16 @@ import org.testng.annotations.Test;
 import pages.AdminPage;
 import pages.FormPage;
 import pages.LoginPage;
-import config.TestConstants;
+import config.ConfigReader;
 
 import static org.testng.Assert.*;
 
 /**
  * Additional tests for multiple pages, form interactions, and authentication.
+ * Configuration is loaded from external properties file.
  */
 public class AdditionalTests extends TestBase {
-    private static final String[] URLS_TO_TEST = {"https://demo.bludit.com/", TestConstants.BASE_URL};
+    private static final String[] URLS_TO_TEST = {ConfigReader.getHomeUrl(), ConfigReader.getBaseUrl()};
     private static final String FORM_TEST_TEXT = "Test textarea content";
     private static final String LOGGED_USER_TEST_TEXT = "Submitting as logged user";
 
@@ -38,7 +39,7 @@ public class AdditionalTests extends TestBase {
      */
     @Test
     public void textareaDropdownRadioFormInteraction() {
-        driver.get(TestConstants.BASE_URL);
+        driver.get(ConfigReader.getBaseUrl());
         FormPage form = new FormPage(driver);
         boolean interacted = false;
 
@@ -63,7 +64,7 @@ public class AdditionalTests extends TestBase {
         }
 
         if (!interacted) {
-            throw new SkipException("No textarea/select/radio found on " + TestConstants.BASE_URL);
+            throw new SkipException("No textarea/select/radio found on " + ConfigReader.getBaseUrl());
         }
 
         form.submitForm();
@@ -75,9 +76,9 @@ public class AdditionalTests extends TestBase {
     @Test
     public void formRequiresUser_thenLogout() {
         LoginPage loginPage = new LoginPage(driver);
-        loginPage.openLoginPage(TestConstants.BASE_URL);
-        loginPage.enterUsername(TestConstants.LOGIN_USERNAME);
-        loginPage.enterPassword(TestConstants.LOGIN_PASSWORD);
+        loginPage.openLoginPage(ConfigReader.getBaseUrl());
+        loginPage.enterUsername(ConfigReader.getLoginUsername());
+        loginPage.enterPassword(ConfigReader.getLoginPassword());
         loginPage.clickLoginButton();
 
         // Wait for dashboard URL to confirm login

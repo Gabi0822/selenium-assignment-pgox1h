@@ -2,12 +2,13 @@ package tests;
 
 import org.testng.annotations.Test;
 import pages.LoginPage;
-import config.TestConstants;
+import config.ConfigReader;
 
 import static org.testng.Assert.*;
 
 /**
  * Tests for login form functionality.
+ * Configuration is loaded from external properties file.
  */
 public class LoginTests extends TestBase {
 
@@ -16,7 +17,7 @@ public class LoginTests extends TestBase {
      */
     @Test
     public void pageTitleContainsBludit() {
-        driver.get(TestConstants.BASE_URL);
+        driver.get(ConfigReader.getBaseUrl());
         String title = driver.getTitle();
         assertTrue(title.toLowerCase().contains("bludit") || title.length() > 0);
     }
@@ -27,7 +28,7 @@ public class LoginTests extends TestBase {
     @Test
     public void loginFormIsPresent() {
         LoginPage loginPage = new LoginPage(driver);
-        loginPage.openLoginPage(TestConstants.BASE_URL);
+        loginPage.openLoginPage(ConfigReader.getBaseUrl());
         assertTrue(loginPage.isLoginFormPresent(), "Login form should be present");
     }
 
@@ -37,7 +38,7 @@ public class LoginTests extends TestBase {
     @Test
     public void fillInputsAndSubmit() {
         LoginPage loginPage = new LoginPage(driver);
-        loginPage.openLoginPage(TestConstants.BASE_URL);
+        loginPage.openLoginPage(ConfigReader.getBaseUrl());
         if (loginPage.isLoginFormPresent()) {
             loginPage.enterUsername("invalid_user");
             loginPage.enterPassword("invalid_pass");

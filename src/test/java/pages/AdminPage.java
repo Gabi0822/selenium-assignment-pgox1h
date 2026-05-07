@@ -2,7 +2,7 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import config.TestConstants;
+import config.ConfigReader;
 
 /**
  * Page Object for admin dashboard functionality.
@@ -46,7 +46,7 @@ public class AdminPage extends BasePage {
         try {
             waitForElement(logoutLink).click();
         } catch (Exception ignored) {
-            navigateTo(TestConstants.LOGOUT_URL);
+            navigateTo(ConfigReader.getLogoutUrl());
         }
     }
 }

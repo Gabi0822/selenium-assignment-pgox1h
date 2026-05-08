@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class FormPage extends BasePage {
     private final By textareaElement = By.tagName("textarea");
+    private final By textInputElement = By.cssSelector("input[type='text'], input[type='email'], input:not([type]), input:not([type='checkbox']):not([type='radio']):not([type='hidden']):not([type='submit']):not([type='button'])");
     private final By selectElement = By.tagName("select");
     private final By radioElement = By.cssSelector("input[type='radio']");
     private final By submitButton = By.cssSelector("button[type='submit'], input[type='submit']");
@@ -39,6 +40,27 @@ public class FormPage extends BasePage {
         WebElement textarea = waitForElement(textareaElement);
         textarea.clear();
         textarea.sendKeys(text);
+    }
+
+    /**
+     * Check if text input is present on page.
+     */
+    public boolean hasTextInput() {
+        try {
+            waitForElement(textInputElement);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Fill text input with text.
+     */
+    public void fillTextInput(String text) {
+        WebElement input = waitForElement(textInputElement);
+        input.clear();
+        input.sendKeys(text);
     }
 
     /**

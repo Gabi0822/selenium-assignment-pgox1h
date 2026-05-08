@@ -80,6 +80,10 @@ public class ConfigReader {
         return getProperty("logout.url");
     }
 
+    public static String getSettingsUrl() {
+        return getProperty("settings.url");
+    }
+
     public static String getLoginUsername() {
         return getProperty("login.username");
     }

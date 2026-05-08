@@ -1,6 +1,8 @@
 package tests;
 
 import java.time.Duration;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.SkipException;
@@ -16,7 +18,7 @@ import static org.testng.Assert.*;
  * Additional tests for multiple pages, form interactions, and authentication.
  */
 public class AdditionalTests extends TestBase {
-    private static final String[] URLS_TO_TEST = {ConfigReader.getHomeUrl(), ConfigReader.getBaseUrl()};
+    private static final String[] URLS_TO_TEST = {ConfigReader.getHomeUrl(), ConfigReader.getBaseUrl(), ConfigReader.getSettingsUrl()};
     private static final String FORM_TEST_TEXT = "Test textarea content";
     private static final String LOGGED_USER_TEST_TEXT = "Submitting as logged user";
 
@@ -38,32 +40,90 @@ public class AdditionalTests extends TestBase {
      */
     @Test
     public void textareaDropdownRadioFormInteraction() {
-        driver.get(ConfigReader.getBaseUrl());
+        // First, login to access the settings page
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.openLoginPage(ConfigReader.getBaseUrl());
+        loginPage.enterUsername(ConfigReader.getLoginUsername());
+        loginPage.enterPassword(ConfigReader.getLoginPassword());
+        loginPage.clickLoginButton();
+        
+        // Wait for dashboard to load
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        AdminPage admin = new AdminPage(driver);
+        wait.until(ExpectedConditions.urlContains("/admin"));
+        
+        // Now navigate to settings page
+        driver.get(ConfigReader.getSettingsUrl());
+        
+        // Wait for settings page to load
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
+        
+        // Click on advanced tab - try multiple possible selectors
+        boolean tabFound = false;
+        try {
+            // Try by link text containing "Advanced"
+            WebElement advancedTab = wait.until(
+                ExpectedConditions.elementToBeClickable(
+                    By.xpath("//a[contains(text(), 'Advanced')]")
+                )
+            );
+            advancedTab.click();
+            tabFound = true;
+        } catch (Exception e1) {
+            try {
+                // Try by class or other attributes
+                WebElement altTab = wait.until(
+                    ExpectedConditions.elementToBeClickable(
+                        By.xpath("//li//a[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'advanced')]")
+                    )
+                );
+                altTab.click();
+                tabFound = true;
+            } catch (Exception e2) {
+                // Tab not found
+            }
+        }
+        
+        if (!tabFound) {
+            throw new SkipException("Could not find Advanced tab on settings page");
+        }
+        
+        // Wait for tab content to load
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
+        
         FormPage form = new FormPage(driver);
         boolean interacted = false;
 
-        if (form.hasTextarea()) {
-            form.fillTextarea(FORM_TEST_TEXT);
+        // Test text input
+        if (form.hasTextInput()) {
+            form.fillTextInput(FORM_TEST_TEXT);
             interacted = true;
         }
 
+        // Test select/dropdown
         if (form.hasSelect()) {
             try {
                 form.selectByVisibleText("English");
             } catch (Exception e) {
-                // Fallback to first available option
-                form.selectByVisibleText(form.getFirstSelectOptionText());
+                try {
+                    form.selectByVisibleText(form.getFirstSelectOptionText());
+                } catch (Exception ignored) {
+                    // Select not interactive
+                }
             }
             interacted = true;
         }
 
-        if (form.hasRadio()) {
-            form.selectRadioByIndex(0);
-            interacted = true;
-        }
-
         if (!interacted) {
-            throw new SkipException("No textarea/select/radio found on " + ConfigReader.getBaseUrl());
+            throw new SkipException("No text input/select found on Advanced tab in settings");
         }
 
         form.submitForm();

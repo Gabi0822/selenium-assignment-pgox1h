@@ -32,17 +32,13 @@ public class AdminPage extends BasePage {
      * Check if logout link is visible.
      */
     private boolean isLogoutLinkPresent() {
-        try {
-            return !driver.findElements(logoutLink).isEmpty();
-        } catch (Exception e) {
-            return false;
-        }
+        return !driver.findElements(logoutLink).isEmpty();
     }
 
     /**
      * Logout from application.
      */
-    public void logout() {
+    public void logout() throws Exception {
         try {
             waitForElement(logoutLink).click();
         } catch (Exception ignored) {

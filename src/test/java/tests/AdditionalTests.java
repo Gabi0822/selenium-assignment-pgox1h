@@ -15,148 +15,177 @@ import config.ConfigReader;
 import static org.testng.Assert.*;
 
 /**
- * Additional tests for multiple pages, form interactions, and authentication.
+ * Tests for multi-page functionality, form interactions, and authenticated user workflows.
+ * Covers page navigation, form interactions on settings with authentication, and logout flows.
  */
 public class AdditionalTests extends TestBase {
-    private static final String[] URLS_TO_TEST = {ConfigReader.getHomeUrl(), ConfigReader.getBaseUrl(), ConfigReader.getSettingsUrl()};
+
+    // ==================== Test Data Constants ====================
+
+    private static final String[] PAGES_TO_VERIFY = {
+        ConfigReader.getHomeUrl(),
+        ConfigReader.getBaseUrl(),
+        ConfigReader.getSettingsUrl()
+    };
     private static final String FORM_TEST_TEXT = "Test textarea content";
-    private static final String LOGGED_USER_TEST_TEXT = "Submitting as logged user";
+    private static final String CUSTOM_FIELD_JSON = "{\"custom\": \"field\", \"value\": \"Test JSON\"}";
+    private static final int SETTINGS_PAGE_LOAD_TIME_MS = 2000;
+    private static final int TAB_TRANSITION_TIME_MS = 1500;
+    private static final int SHORT_WAIT_TIME_MS = 500;
+
+    // ==================== Page Navigation and Verification Tests ====================
 
     /**
-     * Verify page titles are not empty for multiple URLs.
+     * Verify that page titles load correctly for multiple URLs.
      */
-    @Test
-    public void multiplePagesTitleCheck() {
-        for (String url : URLS_TO_TEST) {
+    @Test(description = "Verify page titles load for multiple URLs")
+    public void pages_TitlesLoadCorrectly() {
+        for (String url : PAGES_TO_VERIFY) {
             driver.get(url);
             String title = driver.getTitle();
-            assertNotNull(title);
+            assertNotNull(title, "Title should be present for " + url);
             assertTrue(title.length() > 0, "Title should not be empty for " + url);
         }
     }
 
+    // ==================== Authenticated Form Interaction Tests ====================
+
     /**
-     * Verify form elements (textarea, select, radio) can be interacted with.
+     * Verify form interactions on authenticated settings page.
+     * Tests Advanced tab form submission and Custom Field textarea interaction.
      */
-    @Test
-    public void textareaDropdownRadioFormInteraction() {
-        // First, login to access the settings page
+    @Test(description = "Verify form interactions in Advanced tab and Custom Field section")
+    public void authenticatedSettings_FormInteractionWorkflow() throws Exception {
+        // Login with valid credentials
+        performLogin();
+        
+        // Verify login successful
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.urlContains("/admin"));
+        
+        // Interact with forms in order
+        interactWithAdvancedTabForm();
+        interactWithCustomFieldForm();
+        
+        // Submit the form
+        FormPage form = new FormPage(driver);
+        form.submitForm();
+    }
+
+    // ==================== Logout Tests ====================
+
+    /**
+     * Verify logout workflow after successful login.
+     */
+    @Test(description = "Verify logout after login")
+    public void authentication_LogoutAfterLogin() throws Exception {
+        performLogin();
+        
+        // Wait for dashboard
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait.until(ExpectedConditions.urlContains("/admin/dashboard"));
+        
+        AdminPage admin = new AdminPage(driver);
+        assertTrue(admin.isLoggedIn(), "Should be logged in after valid credentials");
+        
+        // Verify logout
+        admin.logout();
+        wait.until(ExpectedConditions.titleContains("Login"));
+        assertFalse(admin.isLoggedIn(), "Should be logged out after logout");
+    }
+
+    // ==================== Helper Methods ====================
+
+    /**
+     * Perform login with credentials from configuration.
+     */
+    private void performLogin() throws Exception {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.openLoginPage(ConfigReader.getBaseUrl());
         loginPage.enterUsername(ConfigReader.getLoginUsername());
         loginPage.enterPassword(ConfigReader.getLoginPassword());
         loginPage.clickLoginButton();
-        
-        // Wait for dashboard to load
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        AdminPage admin = new AdminPage(driver);
-        wait.until(ExpectedConditions.urlContains("/admin"));
-        
-        // Now navigate to settings page
+    }
+
+    /**
+     * Navigate to settings page and interact with Advanced tab form.
+     */
+    private void interactWithAdvancedTabForm() throws Exception {
         driver.get(ConfigReader.getSettingsUrl());
+        Thread.sleep(SETTINGS_PAGE_LOAD_TIME_MS);
         
-        // Wait for settings page to load
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignored) {
-            Thread.currentThread().interrupt();
-        }
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         
-        // Click on advanced tab - try multiple possible selectors
-        boolean tabFound = false;
-        try {
-            // Try by link text containing "Advanced"
-            WebElement advancedTab = wait.until(
-                ExpectedConditions.elementToBeClickable(
-                    By.xpath("//a[contains(text(), 'Advanced')]")
-                )
-            );
-            advancedTab.click();
-            tabFound = true;
-        } catch (Exception e1) {
-            try {
-                // Try by class or other attributes
-                WebElement altTab = wait.until(
-                    ExpectedConditions.elementToBeClickable(
-                        By.xpath("//li//a[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'advanced')]")
-                    )
-                );
-                altTab.click();
-                tabFound = true;
-            } catch (Exception e2) {
-                // Tab not found
-            }
-        }
-        
-        if (!tabFound) {
-            throw new SkipException("Could not find Advanced tab on settings page");
-        }
+        // Click Advanced tab
+        WebElement advancedTab = wait.until(
+            ExpectedConditions.elementToBeClickable(
+                By.xpath("//a[contains(text(), 'Advanced')]")
+            )
+        );
+        advancedTab.click();
         
         // Wait for tab content to load
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException ignored) {
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(TAB_TRANSITION_TIME_MS);
         
+        // Fill form elements
+        fillAdvancedTabFormFields();
+    }
+
+    /**
+     * Fill all available form fields in the Advanced tab.
+     */
+    private void fillAdvancedTabFormFields() throws Exception {
         FormPage form = new FormPage(driver);
         boolean interacted = false;
-
-        // Test text input
+        
         if (form.hasTextInput()) {
             form.fillTextInput(FORM_TEST_TEXT);
             interacted = true;
         }
-
-        // Test select/dropdown
+        
         if (form.hasSelect()) {
-            try {
-                form.selectByVisibleText("English");
-            } catch (Exception e) {
-                try {
-                    form.selectByVisibleText(form.getFirstSelectOptionText());
-                } catch (Exception ignored) {
-                    // Select not interactive
-                }
+            String optionText = form.getFirstSelectOptionText();
+            if (optionText != null && !optionText.trim().isEmpty()) {
+                form.selectByVisibleText(optionText);
             }
             interacted = true;
         }
-
+        
         if (!interacted) {
-            throw new SkipException("No text input/select found on Advanced tab in settings");
+            throw new SkipException("No form elements found on Advanced tab");
         }
-
-        form.submitForm();
     }
 
     /**
-     * Verify login with valid credentials, then verify logout.
+     * Navigate to Custom Field section and fill textarea.
      */
-    @Test
-    public void formRequiresUser_thenLogout() {
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.openLoginPage(ConfigReader.getBaseUrl());
-        loginPage.enterUsername(ConfigReader.getLoginUsername());
-        loginPage.enterPassword(ConfigReader.getLoginPassword());
-        loginPage.clickLoginButton();
+    private void interactWithCustomFieldForm() throws Exception {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        
+        Thread.sleep(SHORT_WAIT_TIME_MS);
+        
+        // Click Custom Field tab
+        WebElement customFieldTab = wait.until(
+            ExpectedConditions.elementToBeClickable(
+                By.xpath("//a[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'custom')]")
+            )
+        );
+        customFieldTab.click();
+        
+        // Wait for content to load
+        Thread.sleep(TAB_TRANSITION_TIME_MS);
+        
+        // Fill custom field textarea
+        fillCustomFieldTextarea();
+    }
 
-        // Wait for dashboard URL to confirm login
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-        wait.until(ExpectedConditions.urlContains("/admin/dashboard"));
-
-        AdminPage admin = new AdminPage(driver);
-        assertTrue(admin.isLoggedIn(), "Should be logged in after valid credentials");
-
-        // Interact with authenticated page
+    /**
+     * Fill the custom field JSON Format textarea.
+     */
+    private void fillCustomFieldTextarea() throws Exception {
         FormPage form = new FormPage(driver);
-        if (form.hasTextarea()) {
-            form.fillTextarea(LOGGED_USER_TEST_TEXT);
-            form.submitForm();
+        if (form.getAllTextareas().size() > 0) {
+            form.fillLastTextarea(CUSTOM_FIELD_JSON);
         }
-
-        // Verify logout
-        admin.logout();
-        wait.until(ExpectedConditions.titleContains("Login"));
-        assertFalse(admin.isLoggedIn(), "Should be logged out");
     }
 }

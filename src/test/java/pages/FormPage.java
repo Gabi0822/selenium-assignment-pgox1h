@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class FormPage extends BasePage {
     private final By textareaElement = By.tagName("textarea");
-    private final By textInputElement = By.cssSelector("input[type='text'], input[type='email'], input:not([type]), input:not([type='checkbox']):not([type='radio']):not([type='hidden']):not([type='submit']):not([type='button'])");
+    private final By textInputElement = By.cssSelector("input[type='text']");
     private final By selectElement = By.tagName("select");
     private final By radioElement = By.cssSelector("input[type='radio']");
     private final By submitButton = By.cssSelector("button[type='submit'], input[type='submit']");
@@ -43,21 +43,74 @@ public class FormPage extends BasePage {
     }
 
     /**
+     * Get all textareas on the page.
+     */
+    public List<WebElement> getAllTextareas() {
+        return driver.findElements(textareaElement);
+    }
+
+    /**
+     * Fill the last textarea on page (typically the custom field JSON Format).
+     */
+    public void fillLastTextarea(String text) throws InterruptedException {
+        List<WebElement> textareas = getAllTextareas();
+        if (textareas.size() > 0) {
+            WebElement lastTextarea = textareas.get(textareas.size() - 1);
+            
+            // Scroll into view
+            ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", lastTextarea);
+            Thread.sleep(500);
+            
+            lastTextarea.clear();
+            lastTextarea.sendKeys(text);
+            return;
+        }
+        
+        // Fallback: use standard method
+        fillTextarea(text);
+    }
+
+    /**
      * Check if text input is present on page.
      */
-    public boolean hasTextInput() {
-        try {
-            waitForElement(textInputElement);
-            return true;
-        } catch (Exception e) {
+    public boolean hasTextInput() throws InterruptedException {
+        java.util.List<WebElement> allInputs = driver.findElements(By.cssSelector("input[type='text']"));
+        
+        if (allInputs.size() == 0) {
             return false;
         }
+        
+        // Scroll and find visible input
+        WebElement firstInput = allInputs.get(0);
+        
+        // Scroll into view
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", firstInput);
+        Thread.sleep(500);
+        
+        // Inputs exist, return true
+        return true;
     }
 
     /**
      * Fill text input with text.
      */
-    public void fillTextInput(String text) {
+    public void fillTextInput(String text) throws InterruptedException {
+        java.util.List<WebElement> inputs = driver.findElements(By.cssSelector("input[type='text']"));
+        if (inputs.size() > 0) {
+            WebElement input = inputs.get(0);
+            
+            // Scroll into view
+            ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", input);
+            Thread.sleep(500);
+            
+            // Use JavaScript to fill
+            ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(
+                "arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('change'));",
+                input, text
+            );
+            return;
+        }
+        
         WebElement input = waitForElement(textInputElement);
         input.clear();
         input.sendKeys(text);

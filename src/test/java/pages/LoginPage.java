@@ -59,7 +59,7 @@ public class LoginPage extends BasePage {
     /**
      * Submit login form by clicking submit button or pressing Enter.
      */
-    public void clickLoginButton() {
+    public void clickLoginButton() throws Exception {
         try {
             waitForElement(submitButton).click();
         } catch (Exception e) {

@@ -12,8 +12,6 @@ import static org.testng.Assert.*;
  */
 public class LoginTests extends TestBase {
 
-    // ==================== Page Verification Tests ====================
-
     /**
      * Verify the login page title is properly loaded.
      */
@@ -25,8 +23,6 @@ public class LoginTests extends TestBase {
                 "Page title should be loaded and contain Bludit or have content");
     }
 
-    // ==================== Form Element Tests ====================
-
     /**
      * Verify login form elements are present on the page.
      */
@@ -35,8 +31,6 @@ public class LoginTests extends TestBase {
         LoginPage loginPage = openLoginPage();
         assertTrue(loginPage.isLoginFormPresent(), "Login form should be present on page");
     }
-
-    // ==================== Form Interaction Tests ====================
 
     /**
      * Verify form fields can be filled and submitted with invalid credentials.
@@ -51,8 +45,6 @@ public class LoginTests extends TestBase {
             loginPage.clickLoginButton();
         }
     }
-
-    // ==================== Helper Methods ====================
 
     /**
      * Open the login page and return a LoginPage object for interaction.

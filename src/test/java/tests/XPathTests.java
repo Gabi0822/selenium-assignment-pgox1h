@@ -15,7 +15,6 @@ import static org.testng.Assert.*;
  */
 public class XPathTests extends TestBase {
 
-    // ==================== XPath Expression Constants ====================
 
     private static final String XPATH_TEXT_INPUT_WITH_ATTRIBUTES = "//input[@type='text' and @name]";
     private static final String XPATH_PASSWORD_AFTER_TEXT = "//input[@type='password'][preceding::input[@type='text']]";
@@ -23,7 +22,6 @@ public class XPathTests extends TestBase {
     private static final String XPATH_DIV_WITH_INPUT_OR_LABEL = "//div[input or label]";
     private static final String XPATH_LINK_WITHOUT_LOGOUT = "//a[not(contains(translate(@href, 'LOGOUT', 'logout'), 'logout'))]";
 
-    // ==================== XPath AND Operator Tests ====================
 
     /**
      * Test XPath AND operator: find input with type='text' AND name attribute.
@@ -35,8 +33,6 @@ public class XPathTests extends TestBase {
         assertNotNull(element, "Should find text input with name attribute");
     }
 
-    // ==================== XPath Axes Tests ====================
-
     /**
      * Test XPath axes: find password input that has preceding text input (preceding axis).
      */
@@ -46,8 +42,6 @@ public class XPathTests extends TestBase {
         WebElement element = driver.findElement(By.xpath(XPATH_PASSWORD_AFTER_TEXT));
         assertNotNull(element, "Should find password input after text input");
     }
-
-    // ==================== XPath Text Matching Tests ====================
 
     /**
      * Test XPath text matching: find button with "Login" text using normalize-space for robustness.
@@ -59,8 +53,6 @@ public class XPathTests extends TestBase {
         assertNotNull(element, "Should find button with Login text");
     }
 
-    // ==================== XPath Logical Operators Tests ====================
-
     /**
      * Test XPath OR operator: find divs containing either input or label child elements.
      */
@@ -70,8 +62,6 @@ public class XPathTests extends TestBase {
         List<WebElement> elements = driver.findElements(By.xpath(XPATH_DIV_WITH_INPUT_OR_LABEL));
         assertTrue(elements.size() > 0, "Should find divs containing input or label elements");
     }
-
-    // ==================== XPath Negation Tests ====================
 
     /**
      * Test XPath negation: find links NOT containing "logout" in href (using not() function).

@@ -14,7 +14,6 @@ public class FormPage extends BasePage {
     private final By textareaElement = By.tagName("textarea");
     private final By textInputElement = By.cssSelector("input[type='text']");
     private final By selectElement = By.tagName("select");
-    private final By radioElement = By.cssSelector("input[type='radio']");
     private final By submitButton = By.cssSelector("button[type='submit'], input[type='submit']");
 
     public FormPage(WebDriver driver) {
@@ -142,28 +141,6 @@ public class FormPage extends BasePage {
     public String getFirstSelectOptionText() {
         WebElement select = waitForElement(selectElement);
         return new Select(select).getOptions().get(0).getText();
-    }
-
-    /**
-     * Check if radio button is present.
-     */
-    public boolean hasRadio() {
-        try {
-            waitForElement(radioElement);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
-     * Select radio button by index.
-     */
-    public void selectRadioByIndex(int index) {
-        List<WebElement> radios = driver.findElements(radioElement);
-        if (radios.size() > index) {
-            radios.get(index).click();
-        }
     }
 
     /**

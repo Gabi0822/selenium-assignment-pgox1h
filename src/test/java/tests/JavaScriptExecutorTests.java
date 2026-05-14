@@ -19,16 +19,13 @@ public class JavaScriptExecutorTests extends TestBase {
         
         JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
         
-        // Test 1: Get initial scroll position
         Object initialScroll = jsExecutor.executeScript("return window.pageYOffset;");
         assertNotNull(initialScroll, "Should get initial scroll position");
         
-        // Test 2: Scroll down and verify it changed
         jsExecutor.executeScript("window.scrollBy(0, 500);");
         Object afterScroll = jsExecutor.executeScript("return window.pageYOffset;");
         assertNotNull(afterScroll, "Should get scroll position after scrolling");
         
-        // Test 3: Scroll back to top
         jsExecutor.executeScript("window.scrollTo(0, 0);");
         Object finalScroll = jsExecutor.executeScript("return window.pageYOffset;");
         assertTrue((long) finalScroll >= 0, "Should be back at or near top");

@@ -17,35 +17,25 @@ import config.ConfigReader;
  */
 
 public class FormInteractionTests extends TestBase {
-
     private static final String FORM_TEST_TEXT = "Test textarea content";
     private static final String CUSTOM_FIELD_JSON = "{\"custom\": \"field\", \"value\": \"Test JSON\"}";
-    private static final int SETTINGS_PAGE_LOAD_TIME_MS = 2000;
-    private static final int TAB_TRANSITION_TIME_MS = 1500;
-    private static final int SHORT_WAIT_TIME_MS = 500;
-
     /**
      * Verify form interactions on authenticated settings page.
      * Tests Advanced tab form submission and Custom Field textarea interaction.
      */
     @Test(description = "Verify form interactions in Advanced tab and Custom Field section")
     public void settingsPage_FormInteractionWorkflow() throws Exception {
-        // Perform login first
         performLogin();
         
-        // Wait for authentication to complete
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(ConfigReader.getIntProperty("explicit.wait.timeout")));
         wait.until(ExpectedConditions.urlContains("/admin"));
         
-        // Navigate to settings page after login
         driver.get(ConfigReader.getSettingsUrl());
-        Thread.sleep(SETTINGS_PAGE_LOAD_TIME_MS);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[contains(text(), 'Advanced')]")));
         
-        // Interact with forms in order
         interactWithAdvancedTabForm();
         interactWithCustomFieldForm();
         
-        // Submit the form
         FormPage form = new FormPage(driver);
         form.submitForm();
     }
@@ -54,9 +44,8 @@ public class FormInteractionTests extends TestBase {
      * Navigate to settings page and interact with Advanced tab form.
      */
     private void interactWithAdvancedTabForm() throws Exception {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(ConfigReader.getIntProperty("explicit.wait.timeout")));
         
-        // Click Advanced tab
         WebElement advancedTab = wait.until(
             ExpectedConditions.elementToBeClickable(
                 By.xpath("//a[contains(text(), 'Advanced')]")
@@ -64,10 +53,8 @@ public class FormInteractionTests extends TestBase {
         );
         advancedTab.click();
         
-        // Wait for tab content to load
-        Thread.sleep(TAB_TRANSITION_TIME_MS);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[type='text']")));
         
-        // Fill form elements
         fillAdvancedTabFormFields();
     }
 
@@ -100,11 +87,10 @@ public class FormInteractionTests extends TestBase {
      * Navigate to Custom Field section and fill textarea.
      */
     private void interactWithCustomFieldForm() throws Exception {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(ConfigReader.getIntProperty("explicit.wait.timeout")));
         
-        Thread.sleep(SHORT_WAIT_TIME_MS);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'custom')]")));
         
-        // Click Custom Field tab
         WebElement customFieldTab = wait.until(
             ExpectedConditions.elementToBeClickable(
                 By.xpath("//a[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'custom')]")
@@ -112,10 +98,8 @@ public class FormInteractionTests extends TestBase {
         );
         customFieldTab.click();
         
-        // Wait for content to load
-        Thread.sleep(TAB_TRANSITION_TIME_MS);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("textarea")));
         
-        // Fill custom field textarea
         fillCustomFieldTextarea();
     }
 
@@ -138,5 +122,9 @@ public class FormInteractionTests extends TestBase {
         loginPage.enterUsername(ConfigReader.getLoginUsername());
         loginPage.enterPassword(ConfigReader.getLoginPassword());
         loginPage.clickLoginButton();
+        
+        // Wait for login to complete
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(ConfigReader.getIntProperty("explicit.wait.timeout")));
+        wait.until(ExpectedConditions.urlContains("/admin"));
     }
 }

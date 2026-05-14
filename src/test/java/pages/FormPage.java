@@ -24,12 +24,7 @@ public class FormPage extends BasePage {
      * Check if textarea is present on page.
      */
     public boolean hasTextarea() {
-        try {
-            waitForElement(textareaElement);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return waitForElement(textareaElement) != null;
     }
 
     /**
@@ -56,16 +51,16 @@ public class FormPage extends BasePage {
         if (textareas.size() > 0) {
             WebElement lastTextarea = textareas.get(textareas.size() - 1);
             
-            // Scroll into view
             ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", lastTextarea);
-            Thread.sleep(500);
+            new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5)).until(
+                org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf(lastTextarea)
+            );
             
             lastTextarea.clear();
             lastTextarea.sendKeys(text);
             return;
         }
         
-        // Fallback: use standard method
         fillTextarea(text);
     }
 
@@ -79,14 +74,13 @@ public class FormPage extends BasePage {
             return false;
         }
         
-        // Scroll and find visible input
         WebElement firstInput = allInputs.get(0);
         
-        // Scroll into view
         ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", firstInput);
-        Thread.sleep(500);
+        new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5)).until(
+            org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf(firstInput)
+        );
         
-        // Inputs exist, return true
         return true;
     }
 
@@ -98,11 +92,11 @@ public class FormPage extends BasePage {
         if (inputs.size() > 0) {
             WebElement input = inputs.get(0);
             
-            // Scroll into view
             ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", input);
-            Thread.sleep(500);
+            new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5)).until(
+                org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf(input)
+            );
             
-            // Use JavaScript to fill
             ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(
                 "arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('change'));",
                 input, text
@@ -119,12 +113,7 @@ public class FormPage extends BasePage {
      * Check if select dropdown is present.
      */
     public boolean hasSelect() {
-        try {
-            waitForElement(selectElement);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return waitForElement(selectElement) != null;
     }
 
     /**
@@ -147,10 +136,6 @@ public class FormPage extends BasePage {
      * Submit the form.
      */
     public void submitForm() {
-        try {
-            waitForElement(submitButton).click();
-        } catch (Exception e) {
-            // Ignore if submit button not found
-        }
+        waitForElement(submitButton).click();
     }
 }

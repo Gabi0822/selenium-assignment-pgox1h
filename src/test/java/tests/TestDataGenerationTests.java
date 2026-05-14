@@ -1,6 +1,7 @@
 package tests;
 
 import org.testng.annotations.Test;
+import utils.DataGenerator;
 
 import static org.testng.Assert.*;
 
@@ -14,8 +15,8 @@ public class TestDataGenerationTests extends TestBase {
      */
     @Test(description = "Random credentials data generation")
     public void generateRandomCredentials() {
-        String randomUsername = generateRandomUsername();
-        String randomPassword = generateRandomPassword();
+        String randomUsername = DataGenerator.generateRandomUsername();
+        String randomPassword = DataGenerator.generateRandomPassword();
         
         assertNotNull(randomUsername, "Generated username should not be null");
         assertTrue(randomUsername.length() > 0, "Generated username should not be empty");
@@ -26,19 +27,5 @@ public class TestDataGenerationTests extends TestBase {
         assertTrue(randomPassword.startsWith("pass_"), "Password should have predictable format");
         
         assertNotEquals(randomUsername, randomPassword, "Generated data should be different");
-    }
-
-    /**
-     * Generate random username with timestamp.
-     */
-    private String generateRandomUsername() {
-        return "user_" + System.currentTimeMillis() + "_" + (int)(Math.random() * 10000);
-    }
-
-    /**
-     * Generate random password with timestamp.
-     */
-    private String generateRandomPassword() {
-        return "pass_" + System.currentTimeMillis();
     }
 }

@@ -63,7 +63,6 @@ public class ConfigReader {
         return Boolean.parseBoolean(getProperty(key));
     }
 
-    // Convenience methods for common properties
     public static String getBaseUrl() {
         return getProperty("base.url");
     }

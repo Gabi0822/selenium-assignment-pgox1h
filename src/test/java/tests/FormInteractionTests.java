@@ -1,10 +1,8 @@
 package tests;
 
-import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.SkipException;
 import org.testng.annotations.Test;
 import pages.FormPage;
@@ -27,11 +25,10 @@ public class FormInteractionTests extends TestBase {
     public void settingsPage_FormInteractionWorkflow() throws Exception {
         performLogin();
         
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(ConfigReader.getIntProperty("explicit.wait.timeout")));
-        wait.until(ExpectedConditions.urlContains("/admin"));
+        createWait().until(ExpectedConditions.urlContains("/admin"));
         
         driver.get(ConfigReader.getSettingsUrl());
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[contains(text(), 'Advanced')]")));
+        createWait().until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[contains(text(), 'Advanced')]")));
         
         interactWithAdvancedTabForm();
         interactWithCustomFieldForm();
@@ -44,16 +41,14 @@ public class FormInteractionTests extends TestBase {
      * Navigate to settings page and interact with Advanced tab form.
      */
     private void interactWithAdvancedTabForm() throws Exception {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(ConfigReader.getIntProperty("explicit.wait.timeout")));
-        
-        WebElement advancedTab = wait.until(
+        WebElement advancedTab = createWait().until(
             ExpectedConditions.elementToBeClickable(
                 By.xpath("//a[contains(text(), 'Advanced')]")
             )
         );
         advancedTab.click();
         
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[type='text']")));
+        createWait().until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[type='text']")));
         
         fillAdvancedTabFormFields();
     }
@@ -87,18 +82,16 @@ public class FormInteractionTests extends TestBase {
      * Navigate to Custom Field section and fill textarea.
      */
     private void interactWithCustomFieldForm() throws Exception {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(ConfigReader.getIntProperty("explicit.wait.timeout")));
+        createWait().until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'custom')]")));
         
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'custom')]")));
-        
-        WebElement customFieldTab = wait.until(
+        WebElement customFieldTab = createWait().until(
             ExpectedConditions.elementToBeClickable(
                 By.xpath("//a[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'custom')]")
             )
         );
         customFieldTab.click();
         
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("textarea")));
+        createWait().until(ExpectedConditions.presenceOfElementLocated(By.tagName("textarea")));
         
         fillCustomFieldTextarea();
     }
@@ -123,8 +116,6 @@ public class FormInteractionTests extends TestBase {
         loginPage.enterPassword(ConfigReader.getLoginPassword());
         loginPage.clickLoginButton();
         
-        // Wait for login to complete
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(ConfigReader.getIntProperty("explicit.wait.timeout")));
-        wait.until(ExpectedConditions.urlContains("/admin"));
+        createWait().until(ExpectedConditions.urlContains("/admin"));
     }
 }

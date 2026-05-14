@@ -1,8 +1,6 @@
 package tests;
 
-import java.time.Duration;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 import pages.AdminPage;
 import pages.LoginPage;
@@ -26,9 +24,7 @@ public class AuthenticationTests extends TestBase {
     public void loginWithValidCredentials() throws Exception {
         performLogin();
         
-        // Wait for admin page to load
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(ConfigReader.getIntProperty("explicit.wait.timeout")));
-        wait.until(ExpectedConditions.urlContains("/admin"));
+        createWait().until(ExpectedConditions.urlContains("/admin"));
         
         AdminPage admin = new AdminPage(driver);
         assertTrue(admin.isLoggedIn(), "Should be logged in with valid credentials");
@@ -68,8 +64,7 @@ public class AuthenticationTests extends TestBase {
         
         if (admin.isLoggedIn()) {
             admin.logout();
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(ConfigReader.getIntProperty("explicit.wait.timeout")));
-            wait.until(ExpectedConditions.titleContains("Login"));
+            createWait().until(ExpectedConditions.titleContains("Login"));
             assertFalse(admin.isLoggedIn(), "Should be logged out after logout");
         } else {
             assertTrue(driver.getCurrentUrl().contains("bludit"), "Should be on Bludit site");
@@ -86,8 +81,6 @@ public class AuthenticationTests extends TestBase {
         loginPage.enterPassword(ConfigReader.getLoginPassword());
         loginPage.clickLoginButton();
         
-        // Wait for login to complete
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(ConfigReader.getIntProperty("explicit.wait.timeout")));
-        wait.until(ExpectedConditions.urlContains("/admin"));
+        createWait().until(ExpectedConditions.urlContains("/admin"));
     }
 }
